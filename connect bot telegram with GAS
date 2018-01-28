@@ -1,0 +1,38 @@
+var token = "";
+var url = "api telegram" + token;
+var webAppUrl = "your webapp id";
+var ssId = "your spreadsheet id";
+var kuliId = "your id";
+
+function getMe() {
+  var response = UrlFetchApp.fetch(url + "/getMe");
+  Logger.log(response.getContentText());
+}
+
+function getUpdates() {
+  var response = UrlFetchApp.fetch(url + "/getUpdates");
+  Logger.log(response.getContentText());
+}
+
+function setWebhook() {
+  var response = UrlFetchApp.fetch(url + "/setWebhook?url=" + webAppUrl);
+  Logger.log(response.getContentText());
+}
+
+function sendText(id, text) {
+  var response = UrlFetchApp.fetch(url + "/sendMessage?chat_id=" + id + "&text=" + text);
+  Logger.log(response.getContentText());
+}
+
+function doGet(e) {
+  return HtmlService.createHtmlOutput("Hello " + JSON.stringify(e));  
+}
+
+function doPost(e) {
+  var contents = JSON.parse(e.postData.contents);
+  GmailApp.sendEmail(Session.getEffectiveUser().getEmail()," CEK SinauBotku ",JSON.stringify(contents,null,4));
+  var text = contents.message.text;
+  var id = contents.message.from.id;
+  var name = contents.message.from.first_name + "" + contents.message.from.last_name;
+  var ss = SpreadsheetApp.openById(ssId);
+  ss.appendRow([new Date(),id,text]);
